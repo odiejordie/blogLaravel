@@ -30,11 +30,18 @@ class UserController extends Controller
             ->orderBy('posts.created_at', 'desc')
             ->get();
 
+        $post2 = User::with('posts')
+            ->join('posts', 'posts.user_id', '=', 'users.id')
+            ->where('users.id', $id)
+            ->orderBy('posts.created_at', 'desc')
+            ->get();
+            
+
         $foto = User::find($id)->userdetail()->first();
 
         
-        /*dd($post);*/
-        return view('user.index')->with(array('posting' => $post, 'foto' => $foto));
+        /*dd($foto);*/
+        return view('user.index')->with(array('posting' => $post, 'foto' => $foto, 'postingnonfoto' => $post2));
     }
 
     /**
@@ -44,10 +51,22 @@ class UserController extends Controller
      */
     public function create()
     {
+        $id = Sentinel::getUser()->id;
         $post = Post::with('user')
             ->orderBy('created_at', 'desc')
             ->get();
-        return view('user.create')->with('posting', $post);
+
+        $foto = User::find($id)->userdetail()->first();
+        /*$post2 = \DB::table('posts')
+            ->join('users', 'posts.user_id', '=', 'users.id')
+            ->join('user_details', 'users.id', '=', 'user_details.user_id')
+            ->select('posts.*', 'users.first_name', 'user_details.foto')
+            ->orderBy('posts.created_at', 'desc')
+            ->get();*/
+
+        /*dd($post2);*/
+
+        return view('user.create')->with(array('posting' => $post, 'foto' => $foto));
     }
 
     /**
@@ -71,6 +90,25 @@ class UserController extends Controller
     public function show($id)
     {
 
+        $post = User::with('posts')
+            ->join('user_details', 'users.id', '=', 'user_details.user_id')
+            ->join('posts', 'posts.user_id', '=', 'users.id')
+            ->where('users.id', $id)
+            ->orderBy('posts.created_at', 'desc')
+            ->get();
+
+        $post2 = User::with('posts')
+            ->join('posts', 'posts.user_id', '=', 'users.id')
+            ->where('users.id', $id)
+            ->orderBy('posts.created_at', 'desc')
+            ->get();
+            
+        $data = User::find($id);
+        $foto = User::find($id)->userdetail()->first();
+
+        
+        /*dd($post2);*/
+        return view('user.show')->with(array('posting' => $post, 'foto' => $foto, 'postingnonfoto' => $post2, 'user' => $data));
     }
 
     /**
@@ -84,9 +122,9 @@ class UserController extends Controller
         $datauser = User::find($id)->userdetail()->first();
         /*$biouser = UserDetail::with('user_id',$id)->get();*/
 
-
-        /*dd($datauser);*/
-        return view('user.edit')->with(array('user' => $datauser));
+        $datauser2 = User::find($id);
+        /*dd($datauser2);*/
+        return view('user.edit')->with(array('user' => $datauser, 'user2' => $datauser2));
     }
 
     /**
@@ -187,8 +225,30 @@ class UserController extends Controller
         return redirect('/');
     }
 
-    public function bio_update(Request $id, $request){
-        UserDetail::find($id)->update($request->all());
+    public function bio_update(Request $request, $id){
+        /*UserDetail::find($id)->update($request->all());*/
+
+        /*dd($request);*/
+        $file = $request->file('foto');
+
+
+
+        $path = 'upload/';
+        $filename = str_random(6).'_'.$file->getClientOriginalName();
+        $file->move($path, $filename);
+
+        $data = array(
+            'foto' => $path.$filename,
+            'alamat' => $request->input('alamat'),
+            'jenkel' => $request->input('jenkel'),
+            'nohp' => $request->input('nohp'),
+            'ttl' => $request->input('ttl'),
+            'hobi' => $request->input('hobi'),         
+        );
+
+        UserDetail::where('user_id', $id)
+            ->update($data);
+
         return redirect()->back();
     }
 }

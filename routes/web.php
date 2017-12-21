@@ -18,7 +18,7 @@ Route::post('user_comment','UserController@comment')->name('user.comment');
 Route::get('user_comment/{id}', 'UserController@get_comment')->name('user.getcomment');
 /*UPDATE BIODATA*/
 Route::post('store_bio', 'UserController@bio_store')->name('bio.store');
-Route::put('user_bio/{id}', 'UserController@bio_update')->name('bio.update');
+Route::post('user_bio/{id}', 'UserController@bio_update')->name('bio.update');
 
 /*DAFTAR*/
 Route::get('signup', 'SignupController@signup')->name('signup');

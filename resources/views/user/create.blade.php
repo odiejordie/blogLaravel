@@ -6,6 +6,23 @@
 
 @endsection
 
+@section('customstyle')
+<style type="text/css">
+	a{
+		color:#1f1f1f;
+	}
+
+	a:hover{
+		color:grey;
+		text-decoration: none;
+	}
+
+	a:active {
+	    color:#1f1f1f;
+	}
+</style>
+@endsection
+
 @section('content')
 <div class="container" style="padding-top: 60px">
 	<div class="row">
@@ -14,6 +31,7 @@
 			  	<div class="card-body">
 			  		{{ Form::open(array('route' => 'user.store')) }}
 				  		{{ Form::hidden('user_id', Sentinel::getUser()->id) }}
+				  		{{ Form::hidden('foto', $foto->foto) }}
 			    		{{ Form::text('posting', null, array('class' => 'form-control', 'placeholder' => 'Apa yang anda pikirkan?')) }}
 			    		{{ Form::submit('Post', array('class' => 'btn btn-secondary col-sm-2 float-sm-right', 'style' => 'margin-top:10px')) }}
 			  		{{ Form::close() }}
@@ -24,9 +42,9 @@
 			  		<?php $i = 0;?>
 			  		@foreach($posting as $row)
 			  		<div class="media">
-						<img class="mr-3 rounded" src="{{ asset('img/1.jpg') }}" alt="Foto 64x64" style="max-width: 64px; max-height: 64px">
+						<img class="mr-3 rounded" @if($foto == null) src="{{ asset($row->foto) }}" @else src="{{ asset($row->foto) }}" @endif alt="Foto 64x64" style="max-width: 64px; max-height: 64px">
 						<div class="media-body">
-						    <h5 class="mt-0">{{ $row->user->first_name }} {{ $row->user->last_name }}</h5>
+						    <h5 class="mt-0">{{ link_to(route('user.show', $row->user_id), $row->user->first_name.' '.$row->user->last_name) }}</h5>
 						    <p>
 							    {{ $row->posting }}
 							</p>

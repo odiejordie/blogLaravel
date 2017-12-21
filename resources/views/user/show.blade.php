@@ -8,6 +8,7 @@
 
 @section('customstyle')
 <style>
+
 .bg-body{
     box-shadow: 0px 0.5px 10px;
 }
@@ -36,37 +37,31 @@
 </div>
 <div class="container-fluid bg-body">
 	<div class="container">
-		<div class="row" style="padding-top: 10px">
-			@if($foto == null)
-			<div class="col-sm-3" style="bottom:100px">
-				<img src="{{ asset('img/1.jpg') }}" class="rounded mx-auto 2-block img-fluid img-thumbnail" alt="Responsive image">
-				<h3>{{ Sentinel::getUser()->first_name }} {{ Sentinel::getUser()->last_name }}</h3>
-				{{ Sentinel::getUser()->email }}<br>
-			</div>
-			@else
-			<div class="col-sm-3" style="bottom:100px">
-				<img src="{{ asset($foto->foto) }}" class="rounded mx-auto 2-block img-fluid img-thumbnail" alt="Responsive image">
-				<h3>{{ Sentinel::getUser()->first_name }} {{ Sentinel::getUser()->last_name }}</h3>
-				{{ Sentinel::getUser()->email }}<br>
-				<small>
-					{{ $foto->jenkel }}<br>
-					Tlp : {{ $foto->nohp }}<br>
-					Ttl : {{ $foto->ttl }}<br>
-					Hobi : {{ $foto->hobi }}<br>
-				</small>
-			</div>
-			@endif
-			<div class="col-sm-9">
-				<div class="card">
-				  	<div class="card-body">
-				  		{{ Form::open(array('route' => 'user.store')) }}
-				  			{{ Form::hidden('user_id', Sentinel::getUser()->id) }}
-				  			{{ Form::hidden('foto', $foto->foto) }}
-				    		{{ Form::text('posting', null, array('class' => 'form-control', 'placeholder' => 'Apa yang anda pikirkan?')) }}
-				    		{{ Form::submit('Post', array('class' => 'btn btn-secondary col-sm-2 float-sm-right', 'style' => 'margin-top:10px')) }}
-				  		{{ Form::close() }}
-				  	</div>
+		<div class="row justify-content-center">
+			<div class="col-sm-4">
+				@if($foto == null)
+				<div class="col-sm-12 text-center" style="bottom:100px;">
+					<img src="{{ asset('img/1.jpg') }}" class="rounded mx-auto 2-block img-fluid img-thumbnail" alt="Responsive image">
+					<h3>{{ $user->first_name }} {{ $user->last_name }}</h3>
+					{{ $user->email }}<br>	
 				</div>
+				@else
+				<div class="col-sm-12 text-center" style="bottom:100px;">
+					<img src="{{ asset($foto->foto) }}" class="rounded mx-auto 2-block img-fluid img-thumbnail" alt="Responsive image">
+					<h3>{{ $user->first_name }} {{ $user->last_name }}</h3>
+					{{ $user->email }}<br>
+					<small>
+						{{ $foto->jenkel }} |
+						Tlp : {{ $foto->nohp }} |
+						Ttl : {{ $foto->ttl }} |
+						Hobi : {{ $foto->hobi }} |
+					</small>
+				</div>
+				@endif
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-sm-12">
 				<div class="card" style="margin-top: 10px; margin-bottom: 10px">
 				  	<div class="card-body">
 				  		<?php $i = 0;?>
@@ -82,7 +77,7 @@
 								@else
 								{{-- @foreach($row->posts as $post) --}}
 							  		<div class="media">
-										<img class="mr-3 rounded" src="{{ asset($row->foto) }}" alt="Foto 64x64" style="max-width: 64px; max-height: 64px">
+										<img class="mr-3 rounded" src="{{ asset('img/1.jpg') }}" alt="Foto 64x64" style="max-width: 64px; max-height: 64px">
 										<div class="media-body">
 										    <h5 class="mt-0">{{ $row->first_name }} {{ $row->last_name }}</h5>
 										    <p>
@@ -103,7 +98,6 @@
 											    	<div id="exampleAccordion{{$i}}" class="collapse" role="tabpanel">
 											    		<div id="comments{{$i}}"></div>
 												      	{{ Form::open(array('id' => 'form_koment', 'role' => 'form')) }}
-												      	{{ Form::hidden('foto', $foto->foto) }}
 												      	{{ Form::hidden('post_id', $row->id, array('id' => 'post_id'.$i)) }}
 												      	<input type="hidden" name="full_name" id="full_name{{$i}}" value="{{ Sentinel::getUser()->first_name }} {{ Sentinel::getUser()->last_name }}">
 												      	{{ Form::text('comment', null, array('class' => 'form-control form-control-sm', 'placeholder' => 'Komentar anda.', 'id' => 'comment'.$i)) }}
@@ -151,7 +145,6 @@
 											    	<div id="exampleAccordion{{$i}}" class="collapse" role="tabpanel">
 											    		<div id="comments{{$i}}"></div>
 												      	{{ Form::open(array('id' => 'form_koment', 'role' => 'form')) }}
-												      	{{ Form::hidden('foto', $foto->foto) }}
 												      	{{ Form::hidden('post_id', $row->id, array('id' => 'post_id'.$i)) }}
 												      	<input type="hidden" name="full_name" id="full_name{{$i}}" value="{{ Sentinel::getUser()->first_name }} {{ Sentinel::getUser()->last_name }}">
 												      	{{ Form::text('comment', null, array('class' => 'form-control form-control-sm', 'placeholder' => 'Komentar anda.', 'id' => 'comment'.$i)) }}
@@ -177,6 +170,21 @@
 @endsection
 
 @section('script')
+<script>
+	$(document).ready(function() {
+	    var movementStrength = 25;
+	    var height = movementStrength / $(window).height();
+	    var width = movementStrength / $(window).width();
+	    $("#top-image").mousemove(function(e){
+	        var pageX = e.pageX - ($(window).width() / 2);
+	        var pageY = e.pageY - ($(window).height() / 2);
+	        var newvalueX = width * pageX * -1 - 25;
+	        var newvalueY = height * pageY * -1 - 50;
+	        $('#top-image').css("background-position", newvalueX+"px     "+newvalueY+"px");
+	    });
+	});
+</script>
+
 <script>
 	<?php for($i=0;$i<count($posting);$i++){?>
 	var $id{{$i}} = $('#post_id{{$i}}').val();
@@ -235,20 +243,5 @@
         });
     });
     <?php }?>
-</script>
-
-<script>
-	$(document).ready(function() {
-	    var movementStrength = 25;
-	    var height = movementStrength / $(window).height();
-	    var width = movementStrength / $(window).width();
-	    $("#top-image").mousemove(function(e){
-	        var pageX = e.pageX - ($(window).width() / 2);
-	        var pageY = e.pageY - ($(window).height() / 2);
-	        var newvalueX = width * pageX * -1 - 25;
-	        var newvalueY = height * pageY * -1 - 50;
-	        $('#top-image').css("background-position", newvalueX+"px     "+newvalueY+"px");
-	    });
-	});
 </script>
 @endsection
